@@ -20,6 +20,9 @@ int main(){
 
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();     // Create a new context.   check NULL
 
+    // Disable padding
+    // EVP_CIPHER_CTX_set_padding(ctx, 0);
+
     unsigned char key[] = "1234567890abcdef";       // 128-bit key  ASCII characters (16 bytes)
     unsigned char iv[] = "abcdef1234567890";        // 128-bit IV   ASCII characters (16 bytes)
 
