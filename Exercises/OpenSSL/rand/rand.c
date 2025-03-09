@@ -30,8 +30,12 @@ int main(){
         // fprintf(stderr, "Error generating the random string\n");
 
     printf("Sequence generated:\n");
-    for (int i = 0; i < MAX; i++)
-        printf("%02x-", random_string[i]);      // Print the random string in hexadecimal format with a dash between each byte
+    for (int i = 0; i < MAX; i++){
+        printf("%02x", random_string[i]);      // Print the random string in hexadecimal format with a dash between each byte
+        if (i < MAX - 1) {
+            printf("-");            // Add hyphen only between bytes, not at the end
+        }
+    }
     printf("\n");
 
     return 0;
