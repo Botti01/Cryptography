@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/bio.h>
@@ -11,19 +12,28 @@ void handle_errors() {
     abort();
 }
 
+// Base64 decoding function using OpenSSL's BIO
 int base64_decode(const char *input, unsigned char *output, int output_len) {
-    BIO *bio, *b64;
-    int input_len = strlen(input);
-    
-    bio = BIO_new_mem_buf(input, input_len);
-    b64 = BIO_new(BIO_f_base64());
-    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-    bio = BIO_push(b64, bio);
 
+    BIO *bio, *b64; // Two BIO objects: one for Base64 filter, one for memory buffer
+    
+    // Get input length (Base64 encoded string)
+    int input_len = strlen(input);
+    // Create a memory BIO that reads from the input string
+    bio = BIO_new_mem_buf(input, input_len);
+    // Create a Base64 filter BIO
+    b64 = BIO_new(BIO_f_base64());
+    // Configure Base64 BIO to ignore newline characters
+    BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
+    // Chain the BIOs: b64 (Base64 decoder) -> bio (memory buffer)
+    bio = BIO_push(b64, bio);
+    // Read decoded data from BIO chain into output buffer
     int decoded_len = BIO_read(bio, output, output_len);
+    // Free the entire BIO chain
     BIO_free_all(bio);
 
-    return decoded_len;
+    return decoded_len; // Returns length of decoded binary data
+
 }
 
 int main() {
