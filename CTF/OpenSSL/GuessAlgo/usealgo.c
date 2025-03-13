@@ -40,32 +40,11 @@ int main() {
 
     EVP_CIPHER_CTX *ctx = EVP_CIPHER_CTX_new();
 
-    char key_hex[] = "0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF";
-    char iv_hex[] = "11111111111111112222222222222222";
-    char base64_ciphertext[] = "jyS3NIBqenyCWpDI2jkSu+z93NkDbWkUMitg2Q==";
+    char key[] = "0123456789ABCDEF";
+    char iv[] = "0123456789ABCDEF";
+    char base64_ciphertext[] = "ZZJ+BKJNdpXA2jaX8Zg5ItRola18hi95MG8fA/9RPvg=";
 
-    // Convert hex key to binary (32 bytes)
-    int key_len = strlen(key_hex)/2;
-    unsigned char key[key_len];
-    for(int i = 0; i < key_len; i ++) {
-        sscanf(&key_hex[2*i], "%2hhx", &key[i]);
-    }
-    printf("\nKey: ");
-    for(int i = 0; i < key_len; i++)
-        printf("%02x", key[i]);
-    printf("\n");
-
-    // Convert hex IV to binary (16 bytes)
-    int iv_len = strlen(iv_hex)/2;
-    unsigned char iv[iv_len];
-    for(int i = 0; i < iv_len; i++) {
-        sscanf(&iv_hex[2*i], "%2hhx", &iv[i]);
-    }
-    printf("IV: ");
-    for(int i = 0; i < iv_len; i++)
-        printf("%02x", iv[i]);
-    printf("\n");
-
+    
     // Base64 decode the ciphertext
     // Calculate the maximum possible length of the decoded ciphertext.
     // Base64 encoding uses 4 characters to represent 3 bytes of binary data.
@@ -81,8 +60,7 @@ int main() {
         abort();
     }
 
-    // chacha20: 32 bytes key, 16 bytes IV
-    if(!EVP_CipherInit(ctx, EVP_chacha20(), key, iv, DECRYPT))
+    if(!EVP_CipherInit(ctx, EVP_aria_128_cbc(), key, iv, DECRYPT))
         handle_errors();
 
     unsigned char plaintext[ciphertext_len];
@@ -109,4 +87,6 @@ int main() {
 
 }
 
-// Flag: CRYPTO25{MyDecryptedString}
+
+
+// Flag: CRYPTO25{H1d1ng4lgo1sUs3l3ss-EVP_aria_128_cbc}

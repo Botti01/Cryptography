@@ -46,3 +46,6 @@ int main()
     return 0;
 }
 
+
+
+// Flag: CRYPTO25{EVP_CIPHER_CTX_set_padding(ctx,0)}
