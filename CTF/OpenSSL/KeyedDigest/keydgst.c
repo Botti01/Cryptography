@@ -1,3 +1,20 @@
+/*
+Given the secret (represented as a C variable)
+
+unsigned char secret[] = "this_is_my_secret";
+
+Write a program in C that computes the keyed digest as
+
+kd = SHA512 ( secret || input_file || secret)
+
+where || indicates the concatenation (without adding any space characters)
+hex computes the representation as an hexstring
+Surround with CRYPTO25{hex(kd)} to obtain the flag.
+
+HINT: start from hash3.c or hash4.c
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 

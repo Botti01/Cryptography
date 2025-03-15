@@ -1,3 +1,18 @@
+/*
+Write a program that computes the HMAC-SHA256 of two files whose names are passed as parameters from the command line (start from HMAC_computation_EVP).
+
+The flag is obtained as
+
+CRYPTO25{hmac}
+
+where hmac is obtained using the secret "keykeykeykeykeykey" and the two files attached to this challenge (and hexdigits in lowercase):
+
+hmac = hex(HMAC-SHA256("keykeykeykeykeykey", file,file2))
+
+where "keykeykeykeykeykey" is an ASCII string (no quotation marks)
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 

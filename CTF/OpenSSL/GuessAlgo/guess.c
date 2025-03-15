@@ -1,3 +1,21 @@
+/*
+You sniffed the following Base64 string
+
+ZZJ+BKJNdpXA2jaX8Zg5ItRola18hi95MG8fA/9RPvg=
+
+You know it is an encrypted payload that has been ciphered with these parameters: key = "0123456789ABCDEF" iv = "0123456789ABCDEF" 
+(Note: key and iv are not to be taken as hex strings)
+
+Write a program (based for instance on dec1.c or a modification of enc4.c) to decrypt it and obtain decryptedcontent.
+
+Then, take note of the following instruction in your decryption program if(!EVP_CipherInit(ctx,algorithm_name(), key, iv, ENCRYPT))
+
+When you succeed, build the flag in this way (Python-style string concatenation)
+
+"CRYPTO25{" + decryptedcontent + algorithm_name + "}"
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 

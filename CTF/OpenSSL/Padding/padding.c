@@ -1,3 +1,10 @@
+/*
+Starting from enc1.c, find a way to disable the padding.
+
+The flag is the instruction you have to add surrounded by the CRYPTO25{}. Avoid spaces and include the semicolon.
+*/
+
+
 #include <stdio.h>
 #include <string.h>
 
