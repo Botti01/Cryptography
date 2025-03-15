@@ -17,7 +17,7 @@ void handle_errors(void){
 int main(int argc, char **argv){
 
     if(argc != 2){
-        fprintf(stderr, "Invalid parameters num. Usage: %s string to hash\n", argv[0]);
+        fprintf(stderr, "Invalid parameters num. Usage: %s filename\n", argv[0]);
         exit(-1);
     }
 
