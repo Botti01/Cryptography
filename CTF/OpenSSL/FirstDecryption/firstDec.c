@@ -1,4 +1,5 @@
 /*
+
 You detected the following message
 
 jyS3NIBqenyCWpDI2jkSu+z93NkDbWkUMitg2Q==
@@ -10,6 +11,7 @@ It has been generated with the following command line string
 ./enc.exe file.txt 0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF0123456789ABCDEF 11111111111111112222222222222222 file.enc openssl base64 -in file.enc
 
 Write a program in C that decrypts the content and get the flag!
+
 */
 
 
@@ -123,5 +125,7 @@ int main() {
     return 0;
 
 }
+
+
 
 // Flag: CRYPTO25{MyDecryptedString}

@@ -1,4 +1,5 @@
 /*
+
 You sniffed the following Base64 string
 
 ZZJ+BKJNdpXA2jaX8Zg5ItRola18hi95MG8fA/9RPvg=
@@ -13,6 +14,7 @@ Then, take note of the following instruction in your decryption program if(!EVP_
 When you succeed, build the flag in this way (Python-style string concatenation)
 
 "CRYPTO25{" + decryptedcontent + algorithm_name + "}"
+
 */
 
 

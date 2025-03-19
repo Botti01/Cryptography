@@ -1,4 +1,5 @@
 /*
+
 Given the secret (represented as a C variable)
 
 unsigned char secret[] = "this_is_my_secret";
@@ -12,6 +13,7 @@ hex computes the representation as an hexstring
 Surround with CRYPTO25{hex(kd)} to obtain the flag.
 
 HINT: start from hash3.c or hash4.c
+
 */
 
 
@@ -88,10 +90,11 @@ int main(int argc, char **argv){
     // void EVP_MD_CTX_free(EVP_MD_CTX *ctx);
     EVP_MD_CTX_free(md);
 
-    printf("The digest is: ");
+
+    printf("\nCRYPTO25{");
     for(int i = 0; i < md_len; i++)
                 printf("%02x", md_value[i]);
-    printf("\n");
+    printf("}\n\n");
 
 
     // completely free all the cipher data
@@ -103,6 +106,7 @@ int main(int argc, char **argv){
     return 0;
 
 }
+
 
 
 // Flag: CRYPTO25{312f7c144f845211ea18aa82115ae5848dee7036d9527ad014def7d0d495ec54b4f998d688e666aed56b1626bee91359a0db4ddb2f03625e82225dc95a8ff1c5}

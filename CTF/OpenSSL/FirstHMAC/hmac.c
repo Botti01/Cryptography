@@ -1,4 +1,5 @@
 /*
+
 Write a program that computes the HMAC-SHA256 of two files whose names are passed as parameters from the command line (start from HMAC_computation_EVP).
 
 The flag is obtained as
@@ -10,6 +11,7 @@ where hmac is obtained using the secret "keykeykeykeykeykey" and the two files a
 hmac = hex(HMAC-SHA256("keykeykeykeykeykey", file,file2))
 
 where "keykeykeykeykeykey" is an ASCII string (no quotation marks)
+
 */
 
 
@@ -97,15 +99,16 @@ int main(int argc, char **argv){
     fclose(f_in);
     fclose(f_in2);
 
-    printf("The HMAC is: ");
+    printf("\nCRYPTO25{");
     for(int i = 0; i < hmac_len; i++)
         printf("%02x", hmac_value[i]);
-    printf("\n");
+    printf("}\n");
 
 
 	return 0;
 
 }
+
 
 
 // Flag: CRYPTO25{9453ac565269a96ea3ea583b15b410111b42ae03d1054a02fe4ba4b1029734d3}

@@ -1,4 +1,5 @@
 /*
+
 Write a program in C that, using the OpenSSL library, encrypts the content of a file using a user-selected algorithm.
 
 The input filename is passed as first parameter from the command line, key and IV are the second and third parameter, the output 
@@ -9,6 +10,7 @@ The algorithm name must be an OpenSSL-compliant string (e.g., aes-128-cbc or aes
 Look for the proper function here https://www.openssl.org/docs/man3.1/man3/EVP_EncryptInit.html
 
 In doing the exercise you have found a very relevant function, build the flag as "CRYPTO25{" + relevantFunctionName + "}"
+
 */
 
 
@@ -160,6 +162,7 @@ int main(int argc, char **argv)
 
     printf("File encrypted!\n");
 
+    printf("\nCRYPTO25{EVP_get_cipherbyname()}\n\n");
 
     // completely free all the cipher data
     CRYPTO_cleanup_all_ex_data();

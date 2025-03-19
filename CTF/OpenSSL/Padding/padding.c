@@ -1,7 +1,9 @@
 /*
+
 Starting from enc1.c, find a way to disable the padding.
 
 The flag is the instruction you have to add surrounded by the CRYPTO25{}. Avoid spaces and include the semicolon.
+
 */
 
 
@@ -49,6 +51,9 @@ int main()
     for(int i = 0; i < ciphertext_len; i++)
         printf("%02x", ciphertext[i]);
     printf("\n");
+
+    printf("\nCRYPTO25{EVP_CIPHER_CTX_set_padding(ctx,0)}\n\n");
+
 
     return 0;
 }

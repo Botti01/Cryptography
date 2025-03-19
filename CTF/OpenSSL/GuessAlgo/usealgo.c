@@ -69,19 +69,18 @@ int main() {
     if(!EVP_CipherUpdate(ctx, plaintext, &len, ciphertext, ciphertext_len))
         handle_errors();
     plaintext_len += len;
-    printf("\nAfter update: %d\n", plaintext_len);
 
     if(!EVP_CipherFinal_ex(ctx, plaintext + plaintext_len, &len))
         handle_errors();
     plaintext_len += len;
-    printf("After final: %d\n", plaintext_len);
 
     EVP_CIPHER_CTX_free(ctx);
     
-    printf("\nDecrypted Flag: ");
+
+    printf("\nCRYPTO25{");
     for(int i = 0; i < plaintext_len; i++)
         printf("%c", plaintext[i]);
-    printf("\n");
+    printf("EVP_aria_128_cbc}\n\n");
 
     return 0;
 
