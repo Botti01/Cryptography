@@ -38,6 +38,16 @@ void handle_errors(void){
     abort();
 }
 
+/*
+
+The statement give us two BIGNUMs and we have to find the third one. Two numbers have different lengths,
+so could be the RSA modulus and one of the prime factors. The third number should be the other prime factor.
+To find it, we can divide the modulus by the known prime factor.
+Let assume that N = p * q, where p is the known prime factor and q is the unknown prime factor.
+Then q = N / p.
+
+*/
+
 
 // Function to remove colons and return a clean hex string
 void remove_colons(const char *input, char *output) {
@@ -92,15 +102,14 @@ int main(){
                             "54:a0:5f:3c:dd:c7:64:33:05:11:fb:ee:8b:26:07";
 
 
-    // Remove colons from the input data
     // Remove colons and store the cleaned hex strings
     char N_hex[strlen(str1) + 1];
     char p_hex[strlen(str2) + 1];
 
     remove_colons(str1, N_hex);
-    printf("N_hex: %s\n\n", N_hex);
+    // printf("N_hex: %s\n\n", N_hex);
     remove_colons(str2, p_hex);
-    printf("p_hex: %s\n\n", p_hex);
+    // printf("p_hex: %s\n\n", p_hex);
 
 
     // Initialize BIGNUM variables
@@ -131,10 +140,11 @@ int main(){
     size_t p_len = strlen(p_hex);
     size_t q_len = strlen(q_hex);
 
-    // If lengths are not equal, add leading zeros to q_hex
     // Convert q_hex to lowercase
     str_to_lower(q_hex);
 
+    // in RSA the two prime factors should have the same length
+    // If lengths are not equal, add leading zeros to q_hex
     if (q_len < p_len) {
         size_t diff = p_len - q_len;
         // Shift q_hex to the right and add leading zeros
@@ -145,7 +155,7 @@ int main(){
     // Print the computed q with colons
     char q_colon[strlen(q_hex) * 2];
     insert_colons(q_hex, q_colon);
-    printf("CRYPTO25{%s}\n", q_colon);
+    printf("\nCRYPTO25{%s}\n", q_colon);
 
     // Free the allocated memory
     OPENSSL_free(q_hex);
