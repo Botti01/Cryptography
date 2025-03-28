@@ -1,0 +1,15 @@
+Part I
+Pre-assessment questionnaire (stats for course management)
+https://docs.google.com/forms/d/1-mEXH7Ko8dpzhJUjtJN9eR6lSVVltxTPUs0qYDiY0A0/preview
+
+Part II (symmetric crypto)
+https://docs.google.com/forms/d/16f9OiuqPd5tVzykKOWL38uqxHbNFPP_JHQ_a_lZgLRw/preview
+
+Part III (digests+MACs)
+https://docs.google.com/forms/d/1qal2z-q4NWdOVdL2AuoL3CLAVsjbBHBfVM7Pb5_2_kI/preview
+
+Part IV (BigNums)
+https://docs.google.com/forms/d/19EgSK3EC43WTeroV7RSjs742a1uXHjBrbaTYzG4c7fM/edit
+
+Part V (asymmetric crypto)
+https://docs.google.com/forms/d/1S9OrTvPU989sFzpTa-rjh2sJEymgl_vpw47fyJVpyrE/preview
