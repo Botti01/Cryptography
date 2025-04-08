@@ -1,3 +1,5 @@
+# This file is an example of how to use the SHA256 hash function from the hashlib library.
+
 import hashlib
 
 digest_object = hashlib.sha256()

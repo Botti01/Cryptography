@@ -1,3 +1,9 @@
+# This is a simple example of using ChaCha20 stream cipher to encrypt and decrypt a message
+# using the Crypto library in Python. The code generates a random key and nonce,
+# creates a ChaCha20 cipher object, encrypts the plaintext message, and then
+# decrypts it back to the original plaintext. The nonce and ciphertext are encoded
+# in base64 and stored in a JSON object for easy transmission or storage.
+
 import base64
 import json
 from Crypto.Cipher import ChaCha20

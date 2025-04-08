@@ -3,6 +3,8 @@ import sys
 from Crypto.Cipher import ChaCha20
 from Crypto.Random import get_random_bytes
 
+# This code is a simple example of how to use the ChaCha20 stream cipher for encryption.
+# It generates a random key and nonce, encrypts a plaintext message, and prints the ciphertext and nonce.
 
 plaintext = b'This is the secret message to encrypt'
 

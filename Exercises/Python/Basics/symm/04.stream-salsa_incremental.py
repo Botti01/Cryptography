@@ -1,3 +1,5 @@
+# This is an example of incremental encryption with Salsa20
+
 from Crypto.Cipher import Salsa20
 
 # these are bytes

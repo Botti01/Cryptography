@@ -1,3 +1,5 @@
+# This code demonstrates how to hash a file using SHA3-256 from the PyCryptodome library.
+
 from Crypto.Hash import SHA3_256
 
 

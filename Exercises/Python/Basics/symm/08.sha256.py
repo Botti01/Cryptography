@@ -1,3 +1,6 @@
+# This file is an example of how to use the SHA256 hash function from the PyCryptodome library.
+# It demonstrates how to create a hash object, update it with data, and retrieve the final hash value in both binary and hexadecimal formats.
+
 from Crypto.Hash import SHA256
 
 

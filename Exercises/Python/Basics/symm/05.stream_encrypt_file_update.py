@@ -8,6 +8,7 @@ import sys
 
 salsa_key = b'deadbeeddeadbeef'
 
+# The nonce is not secret, but it must be unique for each key
 nonce = get_random_bytes(8)
 streamcipher = Salsa20.new(salsa_key,nonce)
 
@@ -15,6 +16,7 @@ f_output = open(sys.argv[2],"wb")
 
 ciphertext = b''
 
+# Read the file in chunks of 1024 bytes and encrypt each chunk
 with  open(sys.argv[1],"rb") as f_input:
     plaintext = f_input.read(1024)
     while plaintext:

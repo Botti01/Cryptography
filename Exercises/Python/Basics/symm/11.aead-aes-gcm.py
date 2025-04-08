@@ -1,3 +1,6 @@
+# This is an example of authenticated encryption with associated data (AEAD) using AES in GCM mode.
+# It demonstrates how to encrypt a message with an associated header, and then decrypt it while verifying its authenticity.
+
 import json
 from base64 import b64encode,b64decode
 from Crypto.Cipher import AES

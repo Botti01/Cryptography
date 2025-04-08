@@ -5,6 +5,10 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 
 
+# This code is a simple example of how to use the AES block cipher for encryption and decryption.
+# It generates a random key and IV, encrypts a plaintext message, and prints the ciphertext.
+# It also demonstrates how to use padding to handle plaintext messages that are not a multiple of the block size.
+
 print(AES.key_size)
 print(AES.key_size[2])
 
@@ -22,8 +26,6 @@ print(len(ct))
 cipher_dec = AES.new(key, AES.MODE_CBC, iv)
 pt = cipher_dec.decrypt(ct)
 print(pt)
-
-
 
 
 

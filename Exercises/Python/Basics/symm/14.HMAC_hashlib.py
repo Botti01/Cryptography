@@ -1,3 +1,5 @@
+# This example demonstrates how to use HMAC with SHA256 from the hashlib library.
+
 import hashlib
 import hmac
 from Crypto.Random import get_random_bytes

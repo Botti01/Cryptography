@@ -1,3 +1,6 @@
+# This example demonstrates how to use the scrypt key derivation function from the PyCryptodome library.
+# It shows how to derive a cryptographic key from a password using a salt and specific parameters.
+
 from Crypto.Protocol.KDF import scrypt
 from Crypto.Random import get_random_bytes
 

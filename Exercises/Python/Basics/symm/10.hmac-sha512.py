@@ -1,3 +1,6 @@
+# This example demonstrates how to use HMAC with SHA512 from the PyCryptodome library.
+# It shows how to create an HMAC object, update it with data, and verify the authenticity of a message using a secret key.
+
 import base64
 import json
 from Crypto.Hash import HMAC, SHA512
