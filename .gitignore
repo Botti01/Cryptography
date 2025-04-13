@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files for Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+.eggs/
+*.egg-info/
+
+# C/C++ object files and executables
+*.o
+*.obj
+*.so
+*.dll
+*.a
+*.lib
+a.out
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*~
+
+# Editor directories and files
+.vscode/
+.idea/
