@@ -30,6 +30,7 @@ try:
         # Wait for the prompt "The otp I'm using: " and read the complete line
         otp_line = recv_until_prompt("The otp I'm using: ")
         # At this point, conn.recvline() should contain the OTP in hexadecimal
+        print(otp_rest)
         otp_rest = conn.recvline().decode().strip()
         otp_hex = otp_rest  # should be a hexadecimal string
         print("OTP:", otp_hex)
