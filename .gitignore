@@ -1,5 +1,5 @@
-myconfig.py
-mysecret.py
+# myconfig.py
+# mysecret.py
 
 # Byte-compiled / optimized / DLL files for Python
 __pycache__/
