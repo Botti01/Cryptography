@@ -1,3 +1,6 @@
+myconfig.py
+mysecret.py
+
 # Byte-compiled / optimized / DLL files for Python
 __pycache__/
 *.py[cod]
