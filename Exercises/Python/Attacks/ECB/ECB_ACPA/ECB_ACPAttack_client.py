@@ -11,12 +11,11 @@ from Crypto.Cipher import AES
 from pwn import *
 import string
 
-from attacks.ECB.myconfig import HOST,PORT
+from myconfig import HOST,PORT
 
-SECRET_LEN = 16
+SECRET_LEN = 16  # Length of the secret string to be discovered
 
-secret = ""
-
+secret = ""  # Variable to store the discovered secret incrementally
 
 #0:15  Here is the msg:
 #16:31 {0}
@@ -40,25 +39,26 @@ secret = ""
 
 # message = """Here is the msg:{0} - and the key:{1}""".format( input0, ecb_oracle_secret)
 
-fix =" - and the sec:"
+fix =" - and the sec:"  # Fixed portion of the message before the secret
 
-for i in range(0,SECRET_LEN):
-    pad = "A"*(AES.block_size-i)
-    for letter in string.printable:
+for i in range(0,SECRET_LEN):  # Loop to discover each character of the secret
+    pad = "A"*(AES.block_size-i)  # Padding to align the secret to a block boundary
+    for letter in string.printable:  # Iterate over all printable characters
 
-        server = remote(HOST, PORT)
+        server = remote(HOST, PORT)  # Connect to the encryption oracle
 
-        msg = fix+secret+letter+pad
+        msg = fix+secret+letter+pad  # Construct the message to send
         print("Sending: "+msg)
-        server.send(msg)
-        ciphertext = server.recv(1024)
+        server.send(msg)  # Send the message to the oracle
+        ciphertext = server.recv(1024)  # Receive the ciphertext response
 
-        server.close()
+        server.close()  # Close the connection to the oracle
 
+        # Compare the ciphertext blocks to identify the correct character
         if ciphertext[16:32] == ciphertext[48:64]:
             print("Found new character = "+letter)
-            secret+=letter
-            fix = fix[1:]
-            break
+            secret+=letter  # Append the discovered character to the secret
+            fix = fix[1:]  # Adjust the fixed portion to maintain alignment
+            break  # Exit the inner loop once the character is found
 
-print("Secret discovered = "+secret)
+print("Secret discovered = "+secret)  # Output the discovered secret
