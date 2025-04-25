@@ -7,7 +7,6 @@ nc 130.192.5.212 6531
     
 """
 
-
 from pwn import remote      # Import the pwntools library for remote connections
 import sys                  # Import the sys module for system-level operations
 
