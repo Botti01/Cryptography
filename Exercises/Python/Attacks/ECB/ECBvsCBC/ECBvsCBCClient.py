@@ -35,6 +35,8 @@ for i in range(0,int(len(ciphertext_hex)//BLOCK_SIZE_HEX)):
 
 # Determine the encryption mode based on repeated blocks in the ciphertext
 print("Selected mode is", end=' ')
+# 2*BLOCK_SIZE:3*BLOCK_SIZE represents the start an the end of the second block
+# 3*BLOCK_SIZE:4*BLOCK_SIZE represents the start an the end of the third block
 if ciphertext[2*BLOCK_SIZE:3*BLOCK_SIZE] == ciphertext[3*BLOCK_SIZE:4*BLOCK_SIZE] :
     print("ECB")  # ECB mode detected (repeated blocks)
 else:
