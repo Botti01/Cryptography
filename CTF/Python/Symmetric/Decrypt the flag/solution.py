@@ -70,4 +70,4 @@ if __name__ == "__main__":
 
 
 
-#FLAG: CRYPTO25{5a60b310-f194-4661-941b-eab7e18dc073}
+# FLAG: CRYPTO25{5a60b310-f194-4661-941b-eab7e18dc073}
