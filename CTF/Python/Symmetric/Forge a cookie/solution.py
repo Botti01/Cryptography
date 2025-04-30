@@ -8,67 +8,74 @@ nc 130.192.5.212 6521
 
 import base64
 import json
-from pwn import remote
+from pwn import remote 
 
-# Remote service address and port
-HOST = '130.192.5.212'
-PORT = 6521
+# ─── Configuration ───────────────────────────────────────────────────────────────
+HOST = '130.192.5.212'  
+PORT = 6521          
 
-# Connect to the challenge service
+# ─── Step 1: Establish connection and get original token ────────────────────────
+# Connect to the challenge server and send a dummy username to obtain a token.
 io = remote(HOST, PORT)
+io.recvuntil(b'> ')      # wait for ">" prompt asking for username
+io.sendline(b'')         # send empty username to receive a token
 
-# 1) Receive the greeting and send a dummy username (empty string)
-io.recvuntil(b'> ')
-io.sendline(b'')  # name = ""
-
-# 2) The service prints the plaintext JSON token, then the base64(nonce).base64(ciphertext)
-#    Read until we see the token line
+# ─── Step 2: Read the plaintext JSON and Base64 token ───────────────────────────
+# The service first prints the JSON it will encrypt, e.g. {"username": ""}.
 line = io.recvline()
-# This line contains the JSON, e.g. {"username": ""}
 orig_json = line.strip().decode()
-print(f"Original plaintext: {orig_json}")
+print(f"Original plaintext: {orig_json!r}")
 
-# Next line: 'This is your token: <nonce>.<ciphertext>'
-tok_line = io.recvline().strip().decode()
-# Extract the part after the colon
-_, tok = tok_line.split(': ', 1)
+# Next, it prints "This is your token: <nonce>.<ciphertext>"
+tok_line = io.recvline().decode().strip()
+_, tok = tok_line.split(': ', 1)  # extract the part after colon
 print(f"Received token: {tok}")
 
-# Split into nonce and ciphertext, base64-decode both
+# ─── Step 3: Decode nonce and ciphertext ────────────────────────────────────────
+# Split the token into nonce and ciphertext, both Base64-encoded.
 nonce_b64, ct_b64 = tok.split('.')
-nonce = base64.b64decode(nonce_b64)
-ct = base64.b64decode(ct_b64)
+nonce = base64.b64decode(nonce_b64)  # raw 16-byte nonce
+ct = base64.b64decode(ct_b64)        # raw ciphertext bytes
 
-# 3) Recover the keystream by XORing ciphertext with known plaintext
+# ─── Step 4: Recover keystream via known-plaintext attack ───────────────────────
+# Since the service did AES-CTR (or similar stream cipher),
+# ciphertext = plaintext ⊕ keystream. With known orig_json, we can compute:
 orig_bytes = orig_json.encode()
 keystream = bytes(c ^ p for c, p in zip(ct, orig_bytes))
+# Now keystream[i] = ct[i] ⊕ orig_bytes[i] for each byte
 
-# 4) Build a new plaintext that sets admin to true:
-#    We choose a JSON payload of form '{"admin":true}' plus trailing spaces to match length
+# ─── Step 5: Craft new plaintext with admin privileges ─────────────────────────
+# We want '{"admin":true}' as the JSON payload to elevate privileges.
 admin_payload_core = '{"admin":true}'
-# Pad with spaces so that len(new_plain) == len(orig_bytes)
+# Pad with spaces so the new plaintext matches the original length
 pad_len = len(orig_bytes) - len(admin_payload_core)
 if pad_len < 0:
     raise ValueError("Original token too short to embed admin payload")
 new_plain = (admin_payload_core + ' ' * pad_len).encode()
 print(f"Forged plaintext: {new_plain.decode()!r}")
 
-# 5) XOR the new plaintext with the same keystream to get the forged ciphertext
+# ─── Step 6: Compute forged ciphertext using recovered keystream ────────────────
+# ciphertext_forged = new_plain ⊕ keystream
 ct_forged = bytes(p ^ k for p, k in zip(new_plain, keystream))
 
-# 6) Construct the new token: same nonce + new ciphertext
-forged_token = base64.b64encode(nonce).decode() + '.' + base64.b64encode(ct_forged).decode()
+# ─── Step 7: Build the forged token ─────────────────────────────────────────────
+# Reuse the original nonce + our new ciphertext, both Base64-encoded.
+forged_token = (
+    base64.b64encode(nonce).decode()
+    + '.'
+    + base64.b64encode(ct_forged).decode()
+)
 print(f"Forged token: {forged_token}")
 
-# 7) Trigger the flag retrieval
-io.sendline(b'flag')
-io.recvuntil(b'What is your token?')
-io.sendline(forged_token.encode())
-
-# 8) Print out the service response (should include the flag)
+# ─── Step 8: Submit forged token to retrieve flag ──────────────────────────────
+io.sendline(b'flag')                      # select "flag" command
+io.recvuntil(b'What is your token?')      # wait for prompt
+io.sendline(forged_token.encode())        # send our forged token
+# Read and print response, expecting the flag in a JSON or text response
 print(io.recvuntil(b"}").decode())
 io.close()
 
 
 
-# FLAG: CRYPTO25{7d3060b2-518e-4f58-a277-7c5f5d6e11ec}
+# ─── Flag ────────────────────────────────────────────────────────────────────
+# CRYPTO25{7d3060b2-518e-4f58-a277-7c5f5d6e11ec}```

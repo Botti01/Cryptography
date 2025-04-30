@@ -7,89 +7,90 @@ nc 130.192.5.212 6541
 """
 
 import string
-from pwn import remote
+from pwn import remote  
 
-HOST = "130.192.5.212"
-PORT = 6541
-# Block size for the cipher (likely AES)
-BLOCK_SIZE = 16
+# ─── Configuration ───────────────────────────────────────────────────────────────
+HOST = "130.192.5.212"   
+PORT = 6541              
+BLOCK_SIZE = 16          # AES block size in bytes (for ECB oracle alignment)
 
 def main():
-    # 1) Open one persistent connection so that the same AES key survives all our queries.
+    """
+    Connects persistently to the AES-ECB encryption oracle,
+    then recovers the flag byte-by-byte by exploiting the
+    deterministic block cipher property in ECB mode.
+    """
+
+    # ── Step 1: Open persistent connection ─────────────────────────────────────────
+    # Keeping the same AES key across queries allows us to compare ciphertext blocks.
     io = remote(HOST, PORT)
-    # The server immediately prints the menu, ending with "> ".
-    io.recvuntil(b"> ")
+    io.recvuntil(b"> ")  # synchronize to the initial menu prompt
 
-    # We know from the challenge that the flag length is 10 + 36 = 46 bytes.
+    # ── Precompute expected flag length ────────────────────────────────────────────
+    # Known from challenge: flag = 10-byte prefix + 36-byte UUID = 46 bytes total.
     FLAG_LEN = 10 + 36
+    recovered = b""       # buffer to accumulate recovered flag bytes
 
-    recovered = b""  # will hold the bytes of the flag as we discover them
-
-    # We'll only try ASCII letters, digits and punctuation as possible flag characters.
+    # ── Define candidate characters ────────────────────────────────────────────────
+    # Try letters, digits, and punctuation—typical CTF flag charset.
     charset = (string.ascii_letters + string.digits + string.punctuation).encode()
 
-    # 2) Recover the flag one byte at a time:
+    # ── Step 2: Byte-at-a-time ECB decryption ──────────────────────────────────────
     for i in range(FLAG_LEN):
-        # How many “A”s to prepend so that the (i)th unknown flag byte
-        # lands as the very last byte of some ECB block?
-        prefix_len = (BLOCK_SIZE - ( (i + 1) % BLOCK_SIZE )) % BLOCK_SIZE
+        # Calculate how many “A” bytes to prepend so that the unknown byte
+        # lands at the end of a block. This aligns our target byte.
+        prefix_len = (BLOCK_SIZE - ((i + 1) % BLOCK_SIZE)) % BLOCK_SIZE
         prefix = b"A" * prefix_len
 
-        # --- Step A: Get the real ciphertext block containing the unknown byte ---
-        # Menu → "enc"
-        io.sendline(b"enc")
+        # --- A) Obtain the real ciphertext block for the unknown byte ---
+        io.sendline(b"enc")           # select encryption from the menu
         io.recvuntil(b"> ")
-
-        # Oracle: data = bytes.fromhex(input), so send hex(prefix)
         io.sendline(prefix.hex().encode())
-
-        # Read back the full ciphertext (hex) and convert to bytes
-        ct_hex = io.recvline().strip()
+        ct_hex = io.recvline().strip()  # full ciphertext in hex
         full_ct = bytes.fromhex(ct_hex.decode())
+        io.recvuntil(b"> ")            # wait for menu again
 
-        # After printing ciphertext, oracle re‐prints the menu.  Sync up.
-        io.recvuntil(b"> ")
-
-        # Which block index holds our target byte?
+        # Identify which block contains our target byte
         block_index = (prefix_len + i) // BLOCK_SIZE
-        # Extract that 16‐byte block
         target_block = full_ct[block_index*BLOCK_SIZE : (block_index+1)*BLOCK_SIZE]
 
-        # --- Step B: Build a dictionary of (last‐byte ⇒ ciphertext‐block) mappings ---
-        found_byte = None
+        # --- B) Build dictionary of guesses for the last byte in that block ---
+        found = False
         for c in charset:
+            # Construct guess: prefix + all recovered bytes + candidate byte
             guess = prefix + recovered + bytes([c])
-            # Send enc + hex(guess)
+
+            # Send the guess to encryption oracle
             io.sendline(b"enc")
             io.recvuntil(b"> ")
             io.sendline(guess.hex().encode())
-
-            # Read and parse the ciphertext
             ct2 = bytes.fromhex(io.recvline().strip().decode())
             io.recvuntil(b"> ")
 
-            # Since len(guess) = prefix_len + (i+1) ≡ 0 mod BLOCK_SIZE,
-            # the very last byte of guess sits at the end of block_index.
+            # Extract the corresponding block from this ciphertext
             candidate_block = ct2[block_index*BLOCK_SIZE : (block_index+1)*BLOCK_SIZE]
 
+            # If blocks match, we've found the correct byte
             if candidate_block == target_block:
-                # Bingo!
                 recovered += bytes([c])
                 print(f"[+] Recovered byte {i+1}/{FLAG_LEN}: {bytes([c]).decode()!r}")
-                found_byte = c
+                found = True
                 break
 
-        if found_byte is None:
-            print(f"[-] Failed to recover byte #{i}")
+        if not found:
+            # If no candidate matched, exit early to avoid infinite loop
+            print(f"[-] Failed to recover byte #{i+1}")
             break
 
-    io.close()
+    # ── Step 3: Clean up and output ────────────────────────────────────────────────
+    io.close()  # close the persistent connection
+    print("\n[***] Flag:", recovered.decode(errors="ignore"))
 
-    print("\n[***] Flag:", recovered.decode())
 
 if __name__ == "__main__":
     main()
 
 
 
-# FLAG: CRYPTO25{96ce8a93-d548-4f88-bc6c-db6eb3c96382}
+# ─── Flag ────────────────────────────────────────────────────────────────────
+# CRYPTO25{96ce8a93-d548-4f88-bc6c-db6eb3c96382}

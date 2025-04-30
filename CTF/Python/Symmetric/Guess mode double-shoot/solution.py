@@ -6,57 +6,74 @@ nc 130.192.5.212 6532
 
 """
 
-from pwn import remote
+from pwn import remote  
 
-HOST = "130.192.5.212"
-PORT = 6532
-NUM_ROUNDS = 128
+# ─── Configuration ───────────────────────────────────────────────────────────────
+HOST = "130.192.5.212" 
+PORT = 6532       
+NUM_ROUNDS = 128        # number of challenges before flag is revealed
 
+# ─── Utility: Detect encryption mode ────────────────────────────────────────────
 def detect_mode(ct1: bytes, ct2: bytes) -> str:
+    """
+    Compare two ciphertexts of identical plaintext under the same key:
+      - If they match exactly, the mode is ECB (deterministic per block).
+      - Otherwise, it's CBC (IV randomizes the output).
+    """
     return "ECB" if ct1 == ct2 else "CBC"
 
 def main():
+    """
+    1) Connect to the remote mode-detection challenge.
+    2) For each round:
+       a) Send 32 zero-bytes to be encrypted twice.
+       b) Compare the two outputs to guess ECB vs CBC.
+       c) Send the guess and verify correctness.
+    3) After 128 correct guesses, read and print the flag.
+    """
+
+    # ── Step 1: Establish connection ─────────────────────────────────────────────
     io = remote(HOST, PORT)
 
+    # ── Step 2: Iterate through all challenge rounds ─────────────────────────────
     for round_i in range(NUM_ROUNDS):
-        # ----- Show which challenge we’re on -----
-        print(f"Challenge #{round_i}")
+        print(f"Challenge #{round_i}")  # show progress
 
-        # Wait for the prompt, then send 32 zero‐bytes (hex)
+        # 2a) Prepare and send the probe: 32 zero bytes in hex
         io.recvuntil(b"Input: ")
-        probe = b"00" * 32
+        probe = b"00" * 32  # "00" hex × 32 = 32 raw zero bytes
         io.sendline(probe)
 
-        # Read back the first ciphertext
+        # Read first ciphertext output (hex), convert to raw bytes
         line1 = io.recvline().strip()
         ct1_hex = line1.split(b"Output: ")[1]
         ct1 = bytes.fromhex(ct1_hex.decode())
 
-        # Send the same probe again
+        # 2b) Send the same probe again for a second encryption
         io.sendline(probe)
         line2 = io.recvline().strip()
         ct2_hex = line2.split(b"Output: ")[1]
         ct2 = bytes.fromhex(ct2_hex.decode())
 
-        # ----- Print the two ciphertexts so you can see them -----
+        # Display both ciphertexts for debugging/verification
         print(f"  Output1: {ct1_hex.decode()}")
         print(f"  Output2: {ct2_hex.decode()}")
 
-        # Now the server asks us to guess
-        prompt = io.recvuntil(b")\n")
-        print(prompt.decode(), end="")   # prints: What mode did I use? (ECB, CBC)
-
-        guess = detect_mode(ct1, ct2)
+        # 2c) Guess mode based on ciphertext equality
+        prompt = io.recvuntil(b")\n")       # reads "What mode did I use? (ECB, CBC)"
+        print(prompt.decode(), end="")
+        guess = detect_mode(ct1, ct2)       # ECB if identical, else CBC
         io.sendline(guess.encode())
 
-        # Read their response and show it
+        # Read and print the server's response
         resp = io.recvline().strip().decode()
-        print(" ", resp)   # prints either "OK, next" or "Wrong, sorry"
+        print(" ", resp)
         if not resp.startswith("OK"):
+            # Abort on wrong guess to prevent infinite loop
             print(f"[!] Failed at round {round_i}")
             return
 
-    # After 128 correct guesses, we get the flag
+    # ── Step 3: All rounds passed → retrieve and print flag ──────────────────────
     final = io.recvall(timeout=2).decode()
     print(final)
 
@@ -65,4 +82,5 @@ if __name__ == "__main__":
 
 
 
-# FLAG: CRYPTO25{c15fa569-562d-4531-b58b-75fe687c4b0a}
+# ─── Flag ────────────────────────────────────────────────────────────────────
+# CRYPTO25{c15fa569-562d-4531-b58b-75fe687c4b0a}
