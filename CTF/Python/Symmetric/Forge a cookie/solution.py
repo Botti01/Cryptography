@@ -6,6 +6,9 @@ nc 130.192.5.212 6521
 
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Key Stream Reuse
+
 import base64
 import json
 from pwn import remote 

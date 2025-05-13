@@ -6,8 +6,11 @@ This is a long message encrypted a line at the time...
 
 """
 
-import binascii       # for hex decoding
-import re             # for regex UUID matching
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Key Stream Reuse
+
+import binascii
+import re
 
 # ─── Step 1: Read encrypted lines and known plaintext ─────────────────────────────
 with open("hacker-manifesto.enc", "r") as f:
@@ -16,7 +19,7 @@ with open("hacker-manifesto.enc", "r") as f:
 with open("hacker-manifesto.txt", "r", encoding="utf-8") as f:
     known_plaintext = [line.encode("utf-8") for line in f]  # Encode plaintext lines to bytes
 
-print("🔍 Searching for valid keystream...\n")
+print("Searching for valid keystream...\n")
 
 # ─── Step 2: Try to derive a keystream from each known line ──────────────────────
 for idx, (ct_line, pt_line) in enumerate(zip(encrypted_lines, known_plaintext)):
@@ -72,6 +75,7 @@ for idx, (ct_line, pt_line) in enumerate(zip(encrypted_lines, known_plaintext)):
 
 else:
     print("No valid keystream found.")  # If no valid keystream is found after all iterations, print a failure message
+    
     
 
 # ─── Flag ────────────────────────────────────────────────────────────────────────

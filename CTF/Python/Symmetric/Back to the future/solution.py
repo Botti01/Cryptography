@@ -10,6 +10,9 @@ http://130.192.5.212:6522
 
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Key Stream Reuse
+
 import requests               # HTTP client library for Python
 from Crypto.Util.number import long_to_bytes, bytes_to_long  # for integer↔bytes conversion
 import time                   # system time functions
@@ -34,14 +37,14 @@ session = requests.Session()
 
 # ─── Step 1: Perform initial login and recover keystream ─────────────────────────
 def initial_login():
-    """
-    1) Send /login?username=admin&admin=1 to obtain encrypted cookie.
-    2) Compute expected plaintext (includes current expires timestamp).
-    3) Recover ChaCha20 keystream: keystream = plaintext_bytes ⊕ ciphertext_bytes.
-    Returns:
-      - nonce (as raw bytes)
-      - keystream (as raw bytes)
-    """
+
+    # 1) Send /login?username=admin&admin=1 to obtain encrypted cookie.
+    # 2) Compute expected plaintext (includes current expires timestamp).
+    # 3) Recover ChaCha20 keystream: keystream = plaintext_bytes ⊕ ciphertext_bytes.
+    # Returns:
+    #   - nonce (as raw bytes)
+    #   - keystream (as raw bytes)
+
     params = {
         "username": "admin",
         "admin": "1"
@@ -67,14 +70,14 @@ def initial_login():
 
 # ─── Step 2: Forge cookies with varied timestamps ────────────────────────────────
 def forge_and_check(nonce: bytes, keystream: bytes):
-    """
-    Bruteforce different past expiration dates to satisfy the server's
-    get_flag() check, which allows a window of ~300 days.
-    For each guess:
-      1) Compute a forged expires timestamp.
-      2) XOR with recovered keystream to produce new ciphertext.
-      3) Send /flag?nonce=<>&cookie=<> and check for the flag in the response.
-    """
+
+    # Bruteforce different past expiration dates to satisfy the server's
+    # get_flag() check, which allows a window of ~300 days.
+    # For each guess:
+    #   1) Compute a forged expires timestamp.
+    #   2) XOR with recovered keystream to produce new ciphertext.
+    #   3) Send /flag?nonce=<>&cookie=<> and check for the flag in the response.
+
     now = int(time.time())
 
     # Try guessing how many days ago the admin_expire_date was set (10–259 days)

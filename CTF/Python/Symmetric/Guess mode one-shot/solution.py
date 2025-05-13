@@ -7,6 +7,9 @@ nc 130.192.5.212 6531
     
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# ECB vs CBC mode detection
+
 from pwn import remote  
 import sys             
 
@@ -17,22 +20,21 @@ NUM_ROUNDS = 128            # total number of mode-guessing rounds
 
 # ─── Helper: receive until a given prompt ────────────────────────────────────────
 def recv_until_prompt(conn, prompt):
-    """
-    Read from connection until the given prompt is encountered.
-    Returns the full received string (including the prompt).
-    """
+
+    # Read from connection until the given prompt is encountered.
+    # Returns the full received string (including the prompt).
+
     return conn.recvuntil(prompt.encode()).decode()
 
 def main():
-    """
-    1) Connect to the remote mode-guessing service.
-    2) For each of NUM_ROUNDS:
-       a) Read the OTP value (used as plaintext) and send it back to get ciphertext.
-       b) Split ciphertext into two 16-byte blocks.
-       c) If blocks match → ECB; else → CBC.
-       d) Send the guess and verify the response.
-    3) After 128 correct guesses, print the flag.
-    """
+
+    # 1) Connect to the remote mode-guessing service.
+    # 2) For each of NUM_ROUNDS:
+    #    a) Read the OTP value (used as plaintext) and send it back to get ciphertext.
+    #    b) Split ciphertext into two 16-byte blocks.
+    #    c) If blocks match → ECB; else → CBC.
+    #    d) Send the guess and verify the response.
+    # 3) After 128 correct guesses, print the flag.
 
     # ── Step 1: Establish connection ─────────────────────────────────────────────
     conn = remote(HOST, PORT)

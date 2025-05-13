@@ -6,6 +6,9 @@ nc 130.192.5.212 6541
     
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Adaptive Chosen Plaintext Attack 
+
 import string
 from pwn import remote  
 
@@ -15,11 +18,10 @@ PORT = 6541
 BLOCK_SIZE = 16          # AES block size in bytes (for ECB oracle alignment)
 
 def main():
-    """
-    Connects persistently to the AES-ECB encryption oracle,
-    then recovers the flag byte-by-byte by exploiting the
-    deterministic block cipher property in ECB mode.
-    """
+
+    # Connects persistently to the AES-ECB encryption oracle,
+    # then recovers the flag byte-by-byte by exploiting the
+    # deterministic block cipher property in ECB mode.
 
     # ── Step 1: Open persistent connection ─────────────────────────────────────────
     # Keeping the same AES key across queries allows us to compare ciphertext blocks.

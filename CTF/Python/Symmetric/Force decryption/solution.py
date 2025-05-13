@@ -6,6 +6,9 @@ nc 130.192.5.212 6523
     
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Bit Flipping Attack CBC.
+
 import sys
 from pwn import *  
 
@@ -15,21 +18,21 @@ PORT = 6523
 
 # ─── Utility: XOR two byte-strings ───────────────────────────────────────────────
 def xor_bytes(a: bytes, b: bytes) -> bytes:
-    """
-    Perform bytewise XOR of two equal-length byte strings.
-    Used to craft forged IV values in CBC mode.
-    """
+
+    # Perform bytewise XOR of two equal-length byte strings.
+    # Used to craft forged IV values in CBC mode.
+
     return bytes(x ^ y for x, y in zip(a, b))
 
 # ─── Utility: Leak one decrypted block ──────────────────────────────────────────
 def leak_block(r, C_hex: str, IV_hex: str) -> bytes:
-    """
-    Use the oracle to decrypt a single 16-byte block C under IV:
-      1) send "dec" to select decryption
-      2) send the ciphertext hex
-      3) send the IV hex
-      4) read and return the 16-byte plaintext as raw bytes
-    """
+
+    # Use the oracle to decrypt a single 16-byte block C under IV:
+    #   1) send "dec" to select decryption
+    #   2) send the ciphertext hex
+    #   3) send the IV hex
+    #   4) read and return the 16-byte plaintext as raw bytes
+
     r.recvuntil(b"> ")
     r.sendline(b"dec")            # choose decryption option
     r.recvuntil(b"> ")

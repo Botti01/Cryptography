@@ -6,6 +6,9 @@ nc 130.192.5.212 6552
 
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Copy and Paste Attack ECB.
+
 from Crypto.Cipher import AES
 from Crypto.Util.number import long_to_bytes, bytes_to_long
 from Crypto.Util.Padding import pad
@@ -22,12 +25,11 @@ PORT = 6552
 BLOCK_SIZE = 16         # AES block size in bytes (ECB mode)
 
 def main():
-    """
-    1) Connect to the server to get an encrypted user cookie (as an integer).
-    2) Craft a username so that one ciphertext block corresponds to "true" with PKCS#7 pad.
-    3) Splice blocks to create a cookie where &admin=true appears.
-    4) Submit the forged cookie to retrieve the flag.
-    """
+
+    # 1) Connect to the server to get an encrypted user cookie (as an integer).
+    # 2) Craft a username so that one ciphertext block corresponds to "true" with PKCS#7 pad.
+    # 3) Splice blocks to create a cookie where &admin=true appears.
+    # 4) Submit the forged cookie to retrieve the flag.
 
     # ── Step 1: Open connection ──────────────────────────────────────────────────
     io = remote(HOST, PORT)

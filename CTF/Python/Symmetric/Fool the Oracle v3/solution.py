@@ -6,6 +6,9 @@ nc 130.192.5.212 6543
 
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Adaptive Chosen Plaintext Attack
+
 import sys
 from pwn import remote 
 
@@ -17,10 +20,10 @@ FLAG_LEN = 46           # length of the flag: len("CRYPTO25{}") + 36
 
 # ─── Utility: Send payload and receive ciphertext ───────────────────────────────
 def get_ciphertext(io, payload_hex: str) -> bytes:
-    """
-    Send the "enc" command with hex-encoded payload and return
-    the raw ciphertext bytes. We drive the menu once per call.
-    """
+
+    # Send the "enc" command with hex-encoded payload and return
+    # the raw ciphertext bytes. We drive the menu once per call.
+
     io.recvuntil(b"> ")           # wait for menu prompt
     io.sendline(b"enc")           # select encryption option
     io.recvuntil(b"> ")           # wait for payload prompt
@@ -30,13 +33,13 @@ def get_ciphertext(io, payload_hex: str) -> bytes:
 
 # ─── Utility: Detect random-prefix alignment ────────────────────────────────────
 def find_prefix_alignment(io):
-    """
-    Determine how many padding 'A's are needed so that sending
-    A*(pad + 2*BLOCK_SIZE) yields two identical consecutive blocks.
-    Returns:
-      pad_len     — number of random prefix bytes mod BLOCK_SIZE
-      start_block — index of the first of the identical blocks
-    """
+
+    # Determine how many padding 'A's are needed so that sending
+    # A*(pad + 2*BLOCK_SIZE) yields two identical consecutive blocks.
+    # Returns:
+    #   pad_len     — number of random prefix bytes mod BLOCK_SIZE
+    #   start_block — index of the first of the identical blocks
+
     for pad in range(BLOCK_SIZE):
         test = b"A" * (pad + 2 * BLOCK_SIZE)
         ct = get_ciphertext(io, test.hex())
@@ -49,11 +52,10 @@ def find_prefix_alignment(io):
     raise RuntimeError("Could not detect prefix alignment")
 
 def main():
-    """
-    1) Open a persistent connection (ensures a single AES key).
-    2) Detect alignment of the unknown random prefix.
-    3) Recover the flag by byte-at-a-time ECB decryption.
-    """
+
+    # 1) Open a persistent connection (ensures a single AES key).
+    # 2) Detect alignment of the unknown random prefix.
+    # 3) Recover the flag by byte-at-a-time ECB decryption.
 
     # ── Step 1: Establish connection ──────────────────────────────────────────────
     io = remote(HOST, PORT)

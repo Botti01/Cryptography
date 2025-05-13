@@ -6,6 +6,9 @@ nc 130.192.5.212 6532
 
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# ECB vs CBC mode detection
+
 from pwn import remote  
 
 # ─── Configuration ───────────────────────────────────────────────────────────────
@@ -15,22 +18,21 @@ NUM_ROUNDS = 128        # number of challenges before flag is revealed
 
 # ─── Utility: Detect encryption mode ────────────────────────────────────────────
 def detect_mode(ct1: bytes, ct2: bytes) -> str:
-    """
-    Compare two ciphertexts of identical plaintext under the same key:
-      - If they match exactly, the mode is ECB (deterministic per block).
-      - Otherwise, it's CBC (IV randomizes the output).
-    """
+    
+    # Compare two ciphertexts of identical plaintext under the same key:
+    #   - If they match exactly, the mode is ECB (deterministic per block).
+    #   - Otherwise, it's CBC (IV randomizes the output).
+    
     return "ECB" if ct1 == ct2 else "CBC"
 
 def main():
-    """
-    1) Connect to the remote mode-detection challenge.
-    2) For each round:
-       a) Send 32 zero-bytes to be encrypted twice.
-       b) Compare the two outputs to guess ECB vs CBC.
-       c) Send the guess and verify correctness.
-    3) After 128 correct guesses, read and print the flag.
-    """
+    
+    # 1) Connect to the remote mode-detection challenge.
+    # 2) For each round:
+    #    a) Send 32 zero-bytes to be encrypted twice.
+    #    b) Compare the two outputs to guess ECB vs CBC.
+    #    c) Send the guess and verify correctness.
+    # 3) After 128 correct guesses, read and print the flag.
 
     # ── Step 1: Establish connection ─────────────────────────────────────────────
     io = remote(HOST, PORT)

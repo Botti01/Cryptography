@@ -7,6 +7,9 @@ nc 130.192.5.212 6561
 
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Key Stream Reuse
+
 from pwn import *  
 
 # ─── Configuration ───────────────────────────────────────────────────────────────
@@ -15,12 +18,11 @@ PORT = 6561
 
 # ─── Utility: Flag Recovery Exploit Function ─────────────────────────────────────
 def get_flag(seed):
-    """
-    Connects to the remote service, seeds its PRNG (predictable nonce),
-    retrieves the encrypted flag, then recovers the ChaCha20 keystream by
-    encrypting a known plaintext of the same length, and finally XORs
-    everything together to recover the plaintext flag.
-    """
+
+    # Connects to the remote service, seeds its PRNG (predictable nonce),
+    # retrieves the encrypted flag, then recovers the ChaCha20 keystream by
+    # encrypting a known plaintext of the same length, and finally XORs
+    # everything together to recover the plaintext flag.
 
     # ── Step 1: Establish connection ──────────────────────────────────────────────
     # Using pwntools' remote() to open a TCP socket to the challenge server.

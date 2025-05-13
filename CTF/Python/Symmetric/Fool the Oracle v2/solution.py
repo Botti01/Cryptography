@@ -6,6 +6,9 @@ nc 130.192.5.212 6542
 
 """
 
+# ─── Attack ────────────────────────────────────────────────────────────────────
+# Adaptive Chosen Plaintext Attack
+
 import string, math
 from pwn import remote 
 
@@ -23,24 +26,24 @@ CHARSET = (string.ascii_uppercase +
 
 # ─── Helper Function: split_blocks ────────────────────────────────────────────────
 def split_blocks(data: bytes):
-    """
-    Splits raw bytes into a list of BS-byte blocks.
-    This makes it easy to isolate and compare individual cipher blocks.
-    """
+
+    # Splits raw bytes into a list of BS-byte blocks.
+    # This makes it easy to isolate and compare individual cipher blocks.
+
     return [data[i:i+BS] for i in range(0, len(data), BS)]
 
 # ─── Helper Function: make_oracle ────────────────────────────────────────────────
 def make_oracle():
-    """
-    Opens a persistent connection and consumes the initial menu prompt.
-    Returns:
-      - io: the connection object (to be closed by the caller)
-      - oracle(user_bytes) → ciphertext_bytes: function that
-        1) sends "enc" to select encryption
-        2) sends user-supplied bytes (hex-encoded)
-        3) reads and returns the raw ciphertext bytes
-        4) leaves the prompt ready for the next call
-    """
+
+    # Opens a persistent connection and consumes the initial menu prompt.
+    # Returns:
+    #   - io: the connection object (to be closed by the caller)
+    #   - oracle(user_bytes) → ciphertext_bytes: function that
+    #     1) sends "enc" to select encryption
+    #     2) sends user-supplied bytes (hex-encoded)
+    #     3) reads and returns the raw ciphertext bytes
+    #     4) leaves the prompt ready for the next call
+
     io = remote(HOST, PORT)
     io.recvuntil(b"> ")  # consume the initial menu prompt
 
@@ -56,13 +59,13 @@ def make_oracle():
 
 # ─── Helper Function: detect_alignment ───────────────────────────────────────────
 def detect_alignment(oracle):
-    """
-    Determines how many padding 'A's are needed so that
-    our input b"A"*(pad_length + 2*BS) produces two identical
-    adjacent blocks.  This reveals:
-      - pad_length: number of bytes in the unknown random prefix mod BS
-      - prefix_blocks: index of the first of the identical blocks
-    """
+
+    # Determines how many padding 'A's are needed so that
+    # our input b"A"*(pad_length + 2*BS) produces two identical
+    # adjacent blocks.  This reveals:
+    #   - pad_length: number of bytes in the unknown random prefix mod BS
+    #   - prefix_blocks: index of the first of the identical blocks
+    
     for pad_length in range(BS):
         probe = b"A" * (pad_length + 2*BS)
         ct = oracle(probe)
@@ -74,13 +77,13 @@ def detect_alignment(oracle):
 
 # ─── Attack Logic: recover_flag ─────────────────────────────────────────────────
 def recover_flag():
-    """
-    1) Detect random-prefix alignment via ECB block repetition.
-    2) Pre-fill known flag prefix.
-    3) Byte-by-byte brute force of the remaining FLAG_LEN - len(KNOWN_PREFIX) bytes:
-       - Align each unknown byte to the end of a block.
-       - Compare oracle output against a dictionary of guesses.
-    """
+
+    # 1) Detect random-prefix alignment via ECB block repetition.
+    # 2) Pre-fill known flag prefix.
+    # 3) Byte-by-byte brute force of the remaining FLAG_LEN - len(KNOWN_PREFIX) bytes:
+    #    - Align each unknown byte to the end of a block.
+    #    - Compare oracle output against a dictionary of guesses.
+
     io, oracle = make_oracle()
 
     # 1) Find alignment parameters
