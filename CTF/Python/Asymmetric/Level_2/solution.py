@@ -7,3 +7,54 @@ See the attachment for the challenge code. The output is:
 
 """
 
+# ─── Attack ───────────────────────────────────────────────────────────────────────
+# Fermat’s factorization (small prime gap between p and q) 
+
+# ─── Steps ──────────────────────────────────────────────────────────────────────
+#   1. Use Fermat’s method: find a = ceil(√n) and b such that a² − n = b².
+#   2. Derive primes: p = a − b, q = a + b.
+#   3. Compute φ(n) = (p − 1)(q − 1).
+#   4. Compute private exponent d = e⁻¹ mod φ(n).
+#   5. Decrypt ciphertext m = cᵈ mod n and convert to bytes.
+
+from Crypto.Util.number import inverse, long_to_bytes  # for RSA math
+import math                                           # for integer square roots
+
+# ─── Public values (from challenge output) ──────────────────────────────────────
+n = 60509355275518728792864353034381323203712352065221533863094540755630035742080855136016830887120470658395455751858380183285852786807229077435165810022519265154399424311072791755790585544921699474779996198610853766677088209156457859301755313246598035577293799853256065979074343370064111263698164125580000165237
+c = 44695558076372490838321125335259117268430036823123326565653896322404966549742986308988778274388721345811255801305658387179978736924822440382730114598169989281210266972874387657989210875921956705640740514819089546339431934001119998309992280196600672180116219966257003764871670107271245284636072817194316693323
+e = 65537
+
+# ─── Step 1: Fermat’s factorization ──────────────────────────────────────────────
+# Since p and q are very close, set a = ceil(sqrt(n)) and look for b where a² − n = b².
+a = math.isqrt(n)
+if a * a < n:
+    a += 1
+
+while True:
+    b2 = a*a - n
+    b = math.isqrt(b2)
+    if b*b == b2:
+        p = a - b
+        q = a + b
+        break
+    a += 1
+
+print(f"[*] Found factors:\n    p = {p}\n    q = {q}")
+
+# ─── Step 2: Compute φ(n) and private exponent d ───────────────────────────────
+phi = (p - 1) * (q - 1)
+d = inverse(e, phi)
+print(f"[*] Computed φ(n) = {phi}")
+print(f"[*] Private exponent d = {d}")
+
+# ─── Step 3: Decrypt ciphertext ────────────────────────────────────────────────
+m = pow(c, d, n)                 # RSA decryption: m = c^d mod n
+flag = long_to_bytes(m)          # convert integer to byte string
+print()
+print(f"[*] Decrypted flag: {flag.decode()}")
+
+
+
+# ─── FLAG ───────────────────────────────────────────────────────────────────────
+# CRYPTO25{b697e692-401f-4070-9f1f-c9dc2e97a7e9}
