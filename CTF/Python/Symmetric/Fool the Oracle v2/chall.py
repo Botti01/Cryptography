@@ -19,7 +19,7 @@ def encrypt() -> bytes:
     cipher = AES.new(key=key, mode=AES.MODE_ECB)  # Create an AES cipher in ECB mode
     # Encrypt the padded payload and print the result as a hex string
     print(cipher.encrypt(pad(payload, AES.block_size)).hex())
-    # print(payload)  # Debugging: Uncomment to see the payload before encryption
+    # print(payload)
 
 
 def main():

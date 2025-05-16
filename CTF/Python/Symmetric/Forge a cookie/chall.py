@@ -21,7 +21,7 @@ def get_user_token(name):
     token = json.dumps({
         "username": name  # Store the username in the token
     })
-    # print(token)  # Debugging: Print the token before encryption
+    # print(token)  
     enc_token = cipher.encrypt(token.encode())
     # Return the nonce and encrypted token, both base64-encoded
     return f"{base64.b64encode(nonce).decode()}.{base64.b64encode(enc_token).decode()}"

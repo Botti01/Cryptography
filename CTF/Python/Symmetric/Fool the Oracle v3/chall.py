@@ -18,7 +18,7 @@ def encrypt() -> bytes:
     payload = padding + data + flag  # Construct the payload with padding, user data, and the flag
 
     cipher = AES.new(key=key, mode=AES.MODE_ECB)  # Create an AES cipher in ECB mode
-    # print(cipher.encrypt(pad(payload, AES.block_size)).hex())  # Uncomment for debugging
+    # print(cipher.encrypt(pad(payload, AES.block_size)).hex())  
     print(cipher.encrypt(pad(payload, AES.block_size)).hex())  # Encrypt and print the result in hex
 
 

@@ -38,7 +38,7 @@ def get_flag(seed):
     # The service prints a message ending in "secret!\n" followed by hex ciphertext.
     # We strip and decode to get raw bytes for decryption logic.
     io.recvuntil(b"secret!\n")
-    flag_ctxt_hex = io.recvline().strip().decode()  # e.g. "deadbeef..."
+    flag_ctxt_hex = io.recvline().strip().decode()
     flag_ctxt = bytes.fromhex(flag_ctxt_hex)         # convert hex to bytes
 
     # ── Step 4: Trigger second encryption ─────────────────────────────────────────
