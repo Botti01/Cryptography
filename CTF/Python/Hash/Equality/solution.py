@@ -9,6 +9,9 @@ nc 130.192.5.212 6631
 # ─── Attack ──────────────────────────────────────────────────────────────────────
 # Collision attack on MD4 
 
+from pwn import remote
+from MD4Collision import Collision  # provides m1, m2 collision generator
+
 # ─── Steps ──────────────────────────────────────────────────────────────────────
 #   1. Use the `Collision()` function to generate two distinct messages m1, m2
 #      such that MD4(m1) == MD4(m2).
@@ -16,9 +19,6 @@ nc 130.192.5.212 6631
 #   3. Send m1 (hex-encoded) when prompted for the first string.
 #   4. Send m2 (hex-encoded) when prompted for the second string.
 #   5. Read and display the server’s response (the flag).
-
-import socket
-from MD4Collision import Collision  # provides m1, m2 collision generator
 
 def main():
     # Step 1: Generate two colliding messages
@@ -29,33 +29,20 @@ def main():
     port = 6631
 
     # Step 2: Connect to the remote CTF service
-    with socket.create_connection((host, port)) as s:
-        # Helper to receive until a specific prompt appears
-        def recv_until(prompt: bytes) -> bytes:
-            buf = b""
-            while prompt not in buf:
-                chunk = s.recv(4096)
-                if not chunk:
-                    raise ConnectionError("Connection closed by remote host")
-                buf += chunk
-            return buf
-
+    with remote(host, port) as s:
         # Step 3: Wait for and send the first colliding string
-        data = recv_until(b"Enter the first string:")
+        data = s.recvuntil(b"Enter the first string:")
         print(data.decode(), end="")
-        s.sendall((m1_hex + "\n").encode())
+        s.sendline(m1_hex.encode())
 
         # Step 4: Wait for and send the second colliding string
-        data = recv_until(b"Enter your second string:")
+        data = s.recvuntil(b"Enter your second string:")
         print(data.decode(), end="")
-        s.sendall((m2_hex + "\n").encode())
+        s.sendline(m2_hex.encode())
 
-        # Step 5: Read and print the remainder (flag or error)
-        while True:
-            chunk = s.recv(4096)
-            if not chunk:
-                break
-            print(chunk.decode(), end="")
+        # Step 5: Read and display the server’s response (the flag)
+        response = s.recvall()
+        print(response.decode())
 
 if __name__ == "__main__":
     main()
