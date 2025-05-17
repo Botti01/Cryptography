@@ -36,9 +36,11 @@ def main():
         s.sendline(m1_hex.encode())
 
         # Step 4: Wait for and send the second colliding string
+        print()
         data = s.recvuntil(b"Enter your second string:")
         print(data.decode(), end="")
         s.sendline(m2_hex.encode())
+        print()
 
         # Step 5: Read and display the server’s response (the flag)
         response = s.recvall()
