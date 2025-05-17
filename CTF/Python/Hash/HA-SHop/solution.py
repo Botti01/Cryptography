@@ -191,7 +191,7 @@ def forge_sha256_mac(orig_mac_hex, orig_msg, key_len, to_append):
     return new_mac, forged
 
 # ----------------------------------------------------------------------
-# PWNTWOOLS SCRIPT
+# MAIN SCRIPT
 # ----------------------------------------------------------------------
 
 def main():
