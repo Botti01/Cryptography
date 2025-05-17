@@ -351,3 +351,49 @@ def test(input=""):
     import hashlib
     print(hashlib.md5(input.encode('utf-8')).hexdigest())
 
+
+if __name__ == "__main__":
+    
+    secret = b'this is my secret.'
+    message = b'this is the long message I will hash !!!!! '
+    
+    # hg = md5()
+    # hg.update(secret)
+    # hg.update(message)
+    # sniffed_keyed_digest = hg.digest()
+    
+    
+    sniffed_keyed_digest = b'\xc2\xc9\x89\xfaa\x13\xc5\x88\x9d\xda\xf8eV\x16qR'
+    
+    to_add = b'And this is the new part!!!'
+
+
+    # MD5
+    
+    hash_gen = md5()
+    hash_gen.update("some data")
+    print (hash_gen.hexdigest())
+    
+    print(hash_gen.state)
+    hash_gen.update("more data")
+    print(hash_gen.hexdigest())
+    
+    print(_decode(sniffed_keyed_digest, md5.digest_size))
+    
+    # new_hash_gen = md5(state = sniffed_keyed_digest, count = md5.block_size * 8)
+    new_hash_gen = md5(state = sniffed_keyed_digest, count = 2 * md5.block_size * 8)
+    new_hash_gen.update(to_add)
+    print(new_hash_gen.hexdigest())
+    
+    # print(padding(500))
+    
+    pad = padding(len(secret + message) * 8)
+    print(pad)
+    
+    actual_msg = secret + message + pad + to_add
+    hg = md5()
+    hg.update(actual_msg)
+    print(hg.hexdigest())
+    
+    real_msg = message + pad + to_add
+    print(real_msg)
