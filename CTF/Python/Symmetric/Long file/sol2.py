@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sys
 
 # —————————————————————————————————————————————————————————————————————————— #
@@ -100,11 +99,11 @@ def main():
         plaintext[i] = ciphertext[i] ^ keystream[i % PERIOD]
 
     # Write output
-    outname = 'file.dec'
+    outname = 'sol2.txt'
     with open(outname, 'wb') as f:
         f.write(plaintext)
 
-    print(f"[+] Done! Plaintext written to '{outname}'. Open it (e.g. `less file.dec`) to verify.")
+    print(f"[+] Done! Plaintext written to '{outname}'.")
 
 if __name__ == '__main__':
     main()

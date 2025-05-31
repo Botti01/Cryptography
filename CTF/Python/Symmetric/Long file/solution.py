@@ -1,6 +1,7 @@
 """
 
 this file has not been encrypted one line at the time... maybe...
+
 """
 
 # ─── Attack ─────────────────────────────────────────────────────────────────────
@@ -127,7 +128,14 @@ def main():
         f.write(plaintext)
 
     print(f"[+] Done! Decrypted plaintext written to '{outname}'.")
-    print("[+] You can now open it with your favorite text editor/viewer.")
+    
+    # ─── Print the flag if it matches the expected pattern ─────────────────────
+    import re
+    m = re.search(rb"CRYPTO25\{[0-9a-fA-F\-]{36}\}", plaintext)
+    if m:
+        print("FLAG FOUND:", m.group(0).decode("utf-8"))
+    else:
+        print("No CRYPTO25{…} pattern found in decrypted bytes.")
 
 if __name__ == '__main__':
     main()
