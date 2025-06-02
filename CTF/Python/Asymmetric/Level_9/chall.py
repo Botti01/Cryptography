@@ -1,9 +1,10 @@
 from Crypto.Util.number import bytes_to_long, getPrime
 from secret import flag
 
+# Generate two random 512-bit prime numbers for RSA key generation
 p, q = getPrime(512), getPrime(512)
+# Compute the RSA modulus n
 n = p*q
+# Print the modulus n (public key component)
 print(n)
-e = 60016485563460433620911462871489753027091796150597697863772440338904706321535832359517415034149374289955681381097544059467926029963755494161141305994584249448583991034102694954139120453335603006006970009433124857766494518747385902016093339683987307620366742481560543776055295663835860818720290861634213881385
-m = bytes_to_long(flag.encode())
-print(pow(m, e, n))
+# Use a fixed large public exponent e (unusually large for RSA)
