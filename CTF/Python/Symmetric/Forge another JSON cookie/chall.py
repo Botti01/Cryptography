@@ -5,32 +5,37 @@ from secret import flag
 import json
 import base64
 
+# Generate a random 32-byte AES key (used for the session)
 key = get_random_bytes(32)
 
-
 def get_user_token(name):
+    # Create a new AES cipher in ECB mode
     cipher = AES.new(key=key, mode=AES.MODE_ECB)
+    # Create a JSON object with the username and admin status
     token = json.dumps({
         "username": name,
         "admin": False
     })
+    # Pad and encrypt the JSON token, then encode it in base64
     enc_token = cipher.encrypt(pad(token.encode(), AES.block_size))
     return f"{base64.b64encode(enc_token).decode()}"
 
-
 def check_user_token(token):
+    # Decrypt and unpad the base64-encoded token
     cipher = AES.new(key=key, mode=AES.MODE_ECB)
     dec_token = unpad(cipher.decrypt(base64.b64decode(token)), AES.block_size)
 
+    # Parse the decrypted JSON token
     user = json.loads(dec_token)
 
+    # Check if the user is admin
     if user.get("admin", False) == True:
         return True
     else:
         return False
 
-
 def get_flag():
+    # Prompt the user for their token and check if they are admin
     token = input("What is your token?\n> ").strip()
     if check_user_token(token):
         print("You are admin!")
@@ -39,8 +44,8 @@ def get_flag():
         print("HEY! WHAT ARE YOU DOING!?")
         exit(1)
 
-
 if __name__ == "__main__":
+    # Main program loop: ask for username, generate token, and show menu
     name = input("Hi, please tell me your name!\n> ").strip()
     token = get_user_token(name)
     print("This is your token: " + token)
